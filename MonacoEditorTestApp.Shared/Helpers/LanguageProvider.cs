@@ -62,5 +62,10 @@ namespace MonacoEditorTestApp.Helpers
                 return Task.FromResult(item); // throw new NotImplementedException();
             });
         }
+
+        public IAsyncOperation<CompletionItem> ResolveCompletionItemAsync(IModel model, CompletionItem item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

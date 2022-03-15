@@ -11,9 +11,18 @@
 		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
 		<DebugType>portable</DebugType>
 		<DebugSymbols>true</DebugSymbols>
+
+		<!--
+		IL Linking is disabled in Debug configuration.
+		When building in Release, see https://platform.uno/docs/articles/features/using-il-linker-webassembly.html
+		-->
+		<WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="Assets\SplashScreen.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<UpToDateCheckInput Include="..\MonacoEditorTestApp.Shared\**\*.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="WasmCSS\Fonts.css" />
@@ -42,13 +51,14 @@
 
 	<ItemGroup>
 		<!-- Note that for WebAssembly version 1.1.1 of the console logger required -->
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
-		<PackageReference Include="Uno.UI.WebAssembly" Version="4.1.0-dev.545" />
-		<PackageReference Include="Uno.UI.RemoteControl" Version="4.1.0-dev.545" Condition="'$(Configuration)'=='Debug'" />
-		<PackageReference Include="Uno.Wasm.Bootstrap" Version="3.0.0" />
-		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="3.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+		<PackageReference Include="Uno.UI.WebAssembly" Version="4.2.0-dev.299" />
+		<PackageReference Include="Uno.UI.Adapter.Microsoft.Extensions.Logging" Version="4.2.0-dev.299" />
+		<PackageReference Include="Uno.UI.RemoteControl" Version="4.2.0-dev.299" Condition="'$(Configuration)'=='Debug'" />
+		<PackageReference Include="Uno.Wasm.Bootstrap" Version="3.3.0-dev.5" />
+		<PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="3.3.0-dev.5" />
 		<PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.0" />
+		<PackageReference Include="Uno.Extensions.Logging.WebAssembly.Console" Version="1.0.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\MonacoEditorComponent\MonacoEditorComponent.csproj" />

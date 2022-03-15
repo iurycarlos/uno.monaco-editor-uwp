@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -92,7 +93,7 @@ namespace Monaco
             Debug.WriteLine($"InitialiseWebObjects");
             try
             {
-                _parentAccessor = new ParentAccessor(this);
+                _parentAccessor = new ParentAccessor(this, DispatcherQueue.GetForCurrentThread());
                 _parentAccessor.AddAssemblyForTypeLookup(typeof(Range).GetTypeInfo().Assembly);
                 _parentAccessor.RegisterAction("Loaded", CodeEditorLoaded);
 
@@ -100,7 +101,7 @@ namespace Monaco
                 _themeListener.ThemeChanged += ThemeListener_ThemeChanged;
                 _themeToken = RegisterPropertyChangedCallback(RequestedThemeProperty, RequestedTheme_PropertyChanged);
 
-                _keyboardListener = new KeyboardListener(this);
+                _keyboardListener = new KeyboardListener(this, DispatcherQueue.GetForCurrentThread());
 
                 _view.AddWebAllowedObject("Debug", new DebugLogger());
                 _view.AddWebAllowedObject("Parent", _parentAccessor);
@@ -116,6 +117,8 @@ namespace Monaco
 
         private async void CodeEditorLoaded()
         {
+            _initialized = true;
+
             if (Decorations != null && Decorations.Count > 0)
             {
                 // Need to retrigger highlights after load if they were set before load.
@@ -124,6 +127,19 @@ namespace Monaco
 
             // Now we're done loading
             Loading?.Invoke(this, new RoutedEventArgs());
+
+            // Make sure inner editor is focused
+            await SendScriptAsync("editor.focus();");
+
+            // If we're supposed to have focus, make sure we try and refocus on our now loaded webview.
+            if (FocusManager.GetFocusedElement() == this)
+            {
+                _view.Focus(FocusState.Programmatic);
+            }
+
+            IsEditorLoaded = true;
+
+            Loaded?.Invoke(this, new RoutedEventArgs());
 
 #if __WASM__
             Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => WebView_NavigationCompleted(_view, null));

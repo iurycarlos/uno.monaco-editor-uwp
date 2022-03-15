@@ -1,5 +1,11 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp;
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Foundation.Metadata;
+using Windows.System;
 
 namespace Monaco.Helpers
 {
@@ -22,10 +28,12 @@ namespace Monaco.Helpers
     public sealed partial class KeyboardListener
     {
         private readonly WeakReference<CodeEditor> parent;
+        private readonly DispatcherQueue _queue;
 
-        public KeyboardListener(CodeEditor parent) // TODO: Make Interface for event usage
+        public KeyboardListener(CodeEditor parent, DispatcherQueue queue) // TODO: Make Interface for event usage
         {
             this.parent = new WeakReference<CodeEditor>(parent);
+            _queue = queue;
 
             PartialCtor();
         }

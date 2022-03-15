@@ -68,14 +68,17 @@ namespace Monaco
 
 		public void RaiseDOMContentLoaded()
 		{
-			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+            Console.WriteLine("RaiseDOMContentLoaded");
+			this.Log().Info($"RaiseDOMContentLoaded: Handle is null {_handle == null}");
+
+			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 			{
 				this.Log().Debug($"RaiseDOMContentLoaded: Handle is null {_handle == null}");
 			}
 
 			if (_handle == null) return;
 
-			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 			{
 				this.Log().Debug($"Raising DOMContentLoaded");
 			}
@@ -88,21 +91,21 @@ namespace Monaco
 		{
 			if (pObject is IJSObject obj)
 			{
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"AddWebAllowedObject: Add Web Allowed Object - {name}");
 				}
 
 				var method = obj.Handle.GetType().GetMethod("GetNativeInstance", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"AddWebAllowedObject: Method exists {method != null}");
 				}
 
 				var native  = method.Invoke(obj.Handle,new object[] { }) as string;
 
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"AddWebAllowedObject: Native handle {native}");
 				}
@@ -122,7 +125,7 @@ namespace Monaco
 					// console.log('ended');
 					";
 
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"AddWebAllowedObject: {script}");
 				}
@@ -139,7 +142,7 @@ namespace Monaco
 					}
                 }
 
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"Add WebAllowed Compeleted");
 				}
@@ -199,7 +202,7 @@ namespace Monaco
 						: UNO_BOOTSTRAP_WEBAPP_BASE_PATH + UNO_BOOTSTRAP_APP_BASE + "/" + value.OriginalString;
 				}
 
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"Loading {target} (Nav is null {NavigationStarting == null})");
 				}
@@ -228,7 +231,7 @@ namespace Monaco
 				}}
 			}})()";
 
-			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 			{
 				this.Log().Debug("Invoke Script: " + script);
 			}
@@ -237,7 +240,7 @@ namespace Monaco
 			{
 				var result = this.ExecuteJavascript(script);
 
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
 				{
 					this.Log().Debug($"Invoke Script result: {result}");
 				}

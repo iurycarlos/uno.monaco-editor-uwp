@@ -41,17 +41,17 @@ namespace MonacoEditorTestApp
         #region CSS Style Objects
         private readonly CssLineStyle CssLineDarkRed = new CssLineStyle()
         {
-            BackgroundColor = new SolidColorBrush(Colors.DarkRed),
+            BackgroundColor = Colors.DarkRed,
         };
 
         private readonly CssLineStyle CssLineAliceBlue = new CssLineStyle()
         {
-            BackgroundColor = new SolidColorBrush(Colors.AliceBlue)
+            BackgroundColor = Colors.AliceBlue
         };
 
         private readonly CssInlineStyle CssInlineWhiteBold = new CssInlineStyle()
         {
-            ForegroundColor = new SolidColorBrush(Colors.White),
+            ForegroundColor = Colors.White,
             FontWeight = FontWeights.Bold,
             FontStyle = FontStyle.Italic
         };
