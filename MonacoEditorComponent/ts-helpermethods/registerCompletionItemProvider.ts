@@ -1,11 +1,12 @@
 ﻿///<reference path="../monaco-editor/monaco.d.ts" />
-declare var Accessor: ParentAccessor;
 
-const registerCompletionItemProvider = function (languageId, characters) {
+const registerCompletionItemProvider = function (element:any, languageId, characters) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     return monaco.languages.registerCompletionItemProvider(languageId, {
         triggerCharacters: characters,
         provideCompletionItems: function (model, position, context, token) {
-            return Accessor.callEvent("CompletionItemProvider" + languageId, [JSON.stringify(position), JSON.stringify(context)]).then(result => {
+            return editorContext.Accessor.callEvent("CompletionItemProvider" + languageId, [JSON.stringify(position), JSON.stringify(context)]).then(result => {
                 if (result) {
                     const list: monaco.languages.CompletionList = JSON.parse(result);
 
@@ -17,7 +18,7 @@ const registerCompletionItemProvider = function (languageId, characters) {
             });
         },
         resolveCompletionItem: function (item, token) {
-            return Accessor.callEvent("CompletionItemRequested" + languageId, [JSON.stringify(item)]).then(result => {
+            return editorContext.Accessor.callEvent("CompletionItemRequested" + languageId, [JSON.stringify(item)]).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }

@@ -21,13 +21,12 @@ namespace MonacoEditorTestApp.Helpers
             _commandId = commandId;
         }
 
-        public IAsyncOperation<CodeLensList> ProvideCodeLensesAsync(IModel model)
+        public async Task<CodeLensList> ProvideCodeLensesAsync(IModel model)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken cancellationToken)
+
+            return new CodeLensList()
             {
-                return new CodeLensList()
-                {
-                    Lenses = new CodeLens[] {
+                Lenses = new CodeLens[] {
                         new CodeLens()
                         {
                             Id = "Second Line",
@@ -41,15 +40,12 @@ namespace MonacoEditorTestApp.Helpers
                             }
                         }
                     }
-                };
-            });
+            };
         }
 
-        public IAsyncOperation<CodeLens> ResolveCodeLensAsync(IModel model, CodeLens codeLens)
+        public async Task<CodeLens> ResolveCodeLensAsync(IModel model, CodeLens codeLens)
         {
-            return AsyncInfo.Run(delegate (CancellationToken cancelationToken) {
-                return Task.FromResult(codeLens);
-            });                
+            return codeLens;
         }
     }
 }

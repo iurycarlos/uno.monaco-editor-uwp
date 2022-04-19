@@ -1,17 +1,18 @@
 ﻿///<reference path="../monaco-editor/monaco.d.ts" />
-declare var Accessor: ParentAccessor;
 
-const registerColorProvider = function (languageId) {
+const registerColorProvider = function (element: any, languageId) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     return monaco.languages.registerColorProvider(languageId, {
         provideColorPresentations: function (model, colorInfo, token) {
-            return Accessor.callEvent("ProvideColorPresentations" + languageId, [JSON.stringify(colorInfo)]).then(result => {
+            return editorContext.Accessor.callEvent("ProvideColorPresentations" + languageId, [JSON.stringify(colorInfo)]).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }
             });
         },
         provideDocumentColors: function (model, token) {
-            return Accessor.callEvent("ProvideDocumentColors" + languageId, []).then(result => {
+            return editorContext.Accessor.callEvent("ProvideDocumentColors" + languageId, []).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }

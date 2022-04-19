@@ -84,22 +84,19 @@ namespace Monaco.Helpers
         /// <param name="name">Name of event to call.</param>
         /// <param name="parameters">JSON string Parameters.</param>
         /// <returns></returns>
-        public IAsyncOperation<string> CallEvent(string name, [ReadOnlyArray] string[] parameters)
+        public async Task<string> CallEvent(string name, [ReadOnlyArray] string[] parameters)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken token)
+            string result = null;
+
+            await _queue.EnqueueAsync(async () =>
             {
-                string result = null;
-
-                await _queue.EnqueueAsync(async () =>
+                if (events.ContainsKey(name))
                 {
-                    if (events.ContainsKey(name))
-                    {
-                        result = await events[name]?.Invoke(parameters);
-                    }
-                });
+                    result = await events[name]?.Invoke(parameters);
+                }
+            });
 
-                return result;
-            });            
+            return result;
         }
 
         /// <summary>
@@ -156,23 +153,20 @@ namespace Monaco.Helpers
         /// </summary>
         /// <param name="name">Property name on Parent Object.</param>
         /// <returns>Property Value or null.</returns>
-        public IAsyncOperation<object> GetValue(string name)
+        public async Task<object> GetValue(string name)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken cancelationToken)
+            object result = null;
+
+            await _queue.EnqueueAsync(() =>
             {
-                object result = null;
-
-                await _queue.EnqueueAsync(() =>
+                if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
                 {
-                    if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
-                    {
-                        var propinfo = typeinfo.GetProperty(name);
-                        result = propinfo?.GetValue(tobj);
-                    }
-                });
-
-                return result;
+                    var propinfo = typeinfo.GetProperty(name);
+                    result = propinfo?.GetValue(tobj);
+                }
             });
+
+            return result;
         }
 
         public string GetJsonValue(string name)
@@ -198,29 +192,26 @@ namespace Monaco.Helpers
         /// <param name="name">Parent Property name.</param>
         /// <param name="child">Property's Property name to retrieve.</param>
         /// <returns>Value of Child Property or null.</returns>
-        public IAsyncOperation<object> GetChildValue(string name, string child)
+        public async Task<object> GetChildValue(string name, string child)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken cancelationToken)
+            object result = null;
+
+            await _queue.EnqueueAsync(() =>
             {
-                object result = null;
-
-                await _queue.EnqueueAsync(() =>
+                if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
                 {
-                    if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
+                    // TODO: Support params for multi-level digging?
+                    var propinfo = typeinfo.GetProperty(name);
+                    var prop = propinfo?.GetValue(tobj);
+                    if (prop != null)
                     {
-                        // TODO: Support params for multi-level digging?
-                        var propinfo = typeinfo.GetProperty(name);
-                        var prop = propinfo?.GetValue(tobj);
-                        if (prop != null)
-                        {
-                            var childinfo = prop.GetType().GetProperty(child);
-                            result = childinfo?.GetValue(prop);
-                        }
+                        var childinfo = prop.GetType().GetProperty(child);
+                        result = childinfo?.GetValue(prop);
                     }
-                });
-
-                return result;
+                }
             });
+
+            return result;
         }
 
         /// <summary>
@@ -228,21 +219,17 @@ namespace Monaco.Helpers
         /// </summary>
         /// <param name="name">Parent Property name.</param>
         /// <param name="value">Value to set.</param>
-        public IAsyncAction SetValue(string name, object newValue)
+        public async Task SetValue(string name, object newValue)
         {
-            // Need to use AsyncInfo wrapper as otherwise async state machine deadlocks between WebView and UI thread?
-            return AsyncInfo.Run(async delegate (CancellationToken token)
+            await _queue.EnqueueAsync(() =>
             {
-                await _queue.EnqueueAsync(() =>
+                if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
                 {
-                    if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
-                    {
-                        var propinfo = typeinfo.GetProperty(name); // TODO: Cache these?
-                        tobj.IsSettingValue = true;
-                        propinfo?.SetValue(tobj, newValue);
-                        tobj.IsSettingValue = false;
-                    }
-                });
+                    var propinfo = typeinfo.GetProperty(name); // TODO: Cache these?
+                    tobj.IsSettingValue = true;
+                    propinfo?.SetValue(tobj, newValue);
+                    tobj.IsSettingValue = false;
+                }
             });
         }
 
@@ -252,24 +239,21 @@ namespace Monaco.Helpers
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <param name="type"></param>
-        public IAsyncAction SetValue(string name, string newValue, string type)
+        public async Task SetValue(string name, string newValue, string type)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken token)
+            await _queue.EnqueueAsync(() =>
             {
-                await _queue.EnqueueAsync(() =>
+                if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
                 {
-                    if (parent.TryGetTarget(out IParentAccessorAcceptor tobj))
-                    {
-                        var propinfo = typeinfo.GetProperty(name);
-                        var typeobj = LookForTypeByName(type);
+                    var propinfo = typeinfo.GetProperty(name);
+                    var typeobj = LookForTypeByName(type);
 
-                        var obj = JsonConvert.DeserializeObject(newValue, typeobj);
+                    var obj = JsonConvert.DeserializeObject(newValue, typeobj);
 
-                        tobj.IsSettingValue = true;
-                        propinfo?.SetValue(tobj, obj);
-                        tobj.IsSettingValue = false;
-                    }
-                });
+                    tobj.IsSettingValue = true;
+                    propinfo?.SetValue(tobj, obj);
+                    tobj.IsSettingValue = false;
+                }
             });
         }
 

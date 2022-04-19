@@ -1,17 +1,47 @@
-﻿///<reference path="../monaco-editor/monaco.d.ts" />
-declare var Accessor: ParentAccessor;
-declare var Keyboard: KeyboardListener;
+﻿    ///<reference path="../monaco-editor/monaco.d.ts" />
 
-declare var editor: monaco.editor.IStandaloneCodeEditor;
-declare var model: monaco.editor.ITextModel;
-declare var contexts: { [index: string]: monaco.editor.IContextKey<any> };//{};
-declare var decorations: string[];
-declare var modifingSelection: boolean; // Supress updates to selection when making edits.
+class EditorContext {
+    static _editors: Map<any, EditorContext> = new Map<any, EditorContext>(); //  { [id: any]: EditorContext } = { };
 
-const registerHoverProvider = function (languageId: string) {
+    public static registerEditorForElement(element: any, editor: monaco.editor.IStandaloneCodeEditor): EditorContext {
+        var value = EditorContext.getEditorForElement(element);
+        value.editor = editor;
+        return value;
+    }
+
+    public static getEditorForElement(element: any): EditorContext {
+        var context = EditorContext._editors[element];
+
+        if (!context) {
+            EditorContext._editors[element] = context = new EditorContext();
+        }
+
+        return context;
+    }
+
+    constructor() {
+        this.modifingSelection = false;
+        this.contexts = {};
+        this.decorations = [];
+    }
+
+    public Accessor: ParentAccessor;
+    public Keyboard: KeyboardListener;
+    public Theme: ThemeAccessor;
+
+    public editor: monaco.editor.IStandaloneCodeEditor;
+    public model: monaco.editor.ITextModel;
+    public contexts: { [index: string]: monaco.editor.IContextKey<any> };
+    public decorations: string[];
+    public modifingSelection: boolean; // Supress updates to selection when making edits.
+}
+
+const registerHoverProvider = function (element: any, languageId: string) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     return monaco.languages.registerHoverProvider(languageId, {
         provideHover: function (model, position) {
-            return Accessor.callEvent("HoverProvider" + languageId, [JSON.stringify(position)]).then(result => {
+            return editorContext.Accessor.callEvent("HoverProvider" + languageId, [JSON.stringify(position)]).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }
@@ -20,55 +50,61 @@ const registerHoverProvider = function (languageId: string) {
     });
 };
 
-const addAction = function (action: monaco.editor.IActionDescriptor) {
+const addAction = function (element: any, action: monaco.editor.IActionDescriptor) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     action.run = function (ed) {
-        Accessor.callAction("Action" + action.id)
+        editorContext.Accessor.callAction("Action" + action.id)
     };
 
-    editor.addAction(action);
+    editorContext.editor.addAction(action);
 };
 
-const addCommand = function (keybindingStr, handlerName, context) {
-    return editor.addCommand(parseInt(keybindingStr), function () {
+const addCommand = function (element: any, keybindingStr, handlerName, context) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
+    return editorContext.editor.addCommand(parseInt(keybindingStr), function () {
         const objs = [];
         if (arguments) { // Use arguments as Monaco will pass each as it's own parameter, so we don't know how many that may be.
             for (let i = 1; i < arguments.length; i++) { // Skip first one as that's the sender?
                 objs.push(JSON.stringify(arguments[i]));
             }
         }
-        Accessor.callActionWithParameters(handlerName, objs);
+        editorContext.Accessor.callActionWithParameters(handlerName, objs);
     }, context);
 };
 
-const createContext = function (context) {
+const createContext = function (element: any, context) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     if (context) {
-        contexts[context.key] = editor.createContextKey(context.key, context.defaultValue);
+        editorContext.contexts[context.key] = editorContext.editor.createContextKey(context.key, context.defaultValue);
     }
 };
 
-const updateContext = function (key, value) {
-    contexts[key].set(value);
+const updateContext = function (element: any, key, value) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
+    editorContext.contexts[key].set(value);
 }
 
 // link:CodeEditor.Properties.cs:updateContent
-const updateContent = function (content) {
-    // Need to ignore updates from us notifying of a change
-    if (content !== model.getValue()) {
-        model.setValue(content);
+const updateContent = function (element: any, content) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
+   // Need to ignore updates from us notifying of a change
+    if (content !== editorContext.model.getValue()) {
+        editorContext.model.setValue(content);
     }
 };
 
+const updateDecorations = function (element: any, newHighlights) {
+    var editorContext = EditorContext.getEditorForElement(element);
 
-
-
-
-
-
-const updateDecorations = function (newHighlights) {
     if (newHighlights) {
-        decorations = editor.deltaDecorations(decorations, newHighlights);
+        editorContext.decorations = editorContext.editor.deltaDecorations(editorContext.decorations, newHighlights);
     } else {
-        decorations = editor.deltaDecorations(decorations, []);
+        editorContext.decorations = editorContext.editor.deltaDecorations(editorContext.decorations, []);
     }
 };
 
@@ -77,10 +113,12 @@ const updateStyle = function (innerStyle) {
     style.innerHTML = innerStyle;
 };
 
-const getOptions = async function (): Promise<monaco.editor.IEditorOptions> {
+const getOptions = async function (element: any): Promise<monaco.editor.IEditorOptions> {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     let opt = null;
     try {
-        opt = JSON.parse(await Accessor.getJsonValue("Options"));
+        opt = JSON.parse(await editorContext.Accessor.getJsonValue("Options"));
     } finally {
 
     }
@@ -92,17 +130,21 @@ const getOptions = async function (): Promise<monaco.editor.IEditorOptions> {
     return {};
 };
 
-const updateOptions = function (opt: monaco.editor.IEditorOptions) {
+const updateOptions = function (element: any, opt: monaco.editor.IEditorOptions) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     if (opt !== null && typeof opt === "object") {
-        editor.updateOptions(opt);
+        editorContext.editor.updateOptions(opt);
     }
 };
 
-const updateLanguage = function (language) {
-    monaco.editor.setModelLanguage(model, language);
+const updateLanguage = function (element: any, language) {
+    var editorContext = EditorContext.getEditorForElement(element);
+    monaco.editor.setModelLanguage(editorContext.model, language);
 };
 
-const changeTheme = function (theme: string, highcontrast) {
+const changeTheme = function (element: any, theme: string, highcontrast) {
+    var editorContext = EditorContext.getEditorForElement(element);
     let newTheme = 'vs';
     if (highcontrast == "True" || highcontrast == "true") {
         newTheme = 'hc-black';
@@ -115,9 +157,10 @@ const changeTheme = function (theme: string, highcontrast) {
 
 
 
-const keyDown = async function (event) {
+const keyDown = async function (element: any, event) {
+    var editorContext = EditorContext.getEditorForElement(element);
     //Debug.log("Key Down:" + event.keyCode + " " + event.ctrlKey);
-    const result = await Keyboard.keyDown(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
+    const result = await editorContext.Keyboard.keyDown(event.keyCode, event.ctrlKey, event.shiftKey, event.altKey, event.metaKey);
     if (result) {
         event.cancelBubble = true;
         event.preventDefault();

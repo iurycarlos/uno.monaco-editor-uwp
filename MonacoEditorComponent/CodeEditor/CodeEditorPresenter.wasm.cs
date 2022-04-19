@@ -121,7 +121,9 @@ namespace Monaco
 					var frameWindow = window;
 					// console.log('fw>' + (!frameWindow));
 
-					frameWindow.{name} = value;
+					var editorContext = EditorContext.getEditorForElement(frame);
+					editorContext.{name} = value;
+
 					// console.log('ended');
 					";
 
@@ -260,110 +262,9 @@ namespace Monaco
 
 		public void Launch()
 		{
-			string javascript = $@"
-        (function(){{
-
-			Debug.log(""Create dynamic style element"");
-			var head = document.head || document.getElementsByTagName('head')[0];
-			var style = document.createElement('style');
-			style.id='dynamic';
-			head.appendChild(style);
-
-            Debug.log(""Starting Monaco Load"");
-
-            var editor;
-            var model;
-            var contexts = {{}};
-			window.contexts={{}};
-            var decorations = [];
-			window.decorations=[];
-            var modifingSelection = false; // Supress updates to selection when making edits.
-			window.modifyingSelection=false;
-
-			require.config({{ paths: {{ 'vs': '{UNO_BOOTSTRAP_WEBAPP_BASE_PATH}{UNO_BOOTSTRAP_APP_BASE}/monaco-editor/min/vs' }} }});
-			require(['vs/editor/editor.main'], function () {{
-
-
-				Debug.log(""Grabbing Monaco Options"");
-
-				var opt = {{}};
-				try{{
-					opt = getOptions();
-				}}
-				catch(err){{
-					Debug.log(""Unable to read options - "" + err);
-				}}
-
-				Debug.log(""Getting Parent Text value"");
-				opt[""value""] = getParentValue(""Text"");
-
-				Debug.log(""Getting Host container"");
-				Debug.log(""Creating Editor"");
-				const editor = monaco.editor.create(element, opt);
-				window.editor= editor;
-
-				Debug.log(""Getting Editor model"");
-	            model = editor.getModel();
-				window.model = model;
-
-	            // Listen for Content Changes
-				Debug.log(""Listening for changes in the editor model - "" + (!model));
-	            model.onDidChangeContent((event) => {{
-	                   Parent.setValue(""Text"", stringifyForMarshalling(model.getValue()));
-	                    //console.log(""buffers: "" + JSON.stringify(model._buffer._pieceTree._buffers));
-	                    //console.log(""commandMgr: "" + JSON.stringify(model._commandManager));
-	                    //console.log(""viewState:"" + JSON.stringify(editor.saveViewState()));
-	                }});
-
-	            // Listen for Selection Changes
-				Debug.log(""Listening for changes in the editor selection"");
-	            editor.onDidChangeCursorSelection((event) => {{
-	                            if (!modifingSelection)
-	                            {{
-	                                console.log(event.source);
-	                        Parent.setValue(""SelectedText"", stringifyForMarshalling(model.getValueInRange(event.selection)));
-	                        Parent.setValueWithType(""SelectedRange"", stringifyForMarshalling(JSON.stringify(event.selection)), ""Selection"");
-	                        }}
-	                    }});
-
-	            // Set theme
-				Debug.log(""Getting parent theme value"");
-	            let theme = getParentJsonValue(""RequestedTheme"");
-	            theme = {{
-	                        ""0"": ""Default"",
-	                        ""1"": ""Light"",
-	                        ""2"": ""Dark""
-	                    }}
-	                    [theme];
-				Debug.log(""Current theme value - "" + theme);
-	            if (theme == ""Default"") {{
-					Debug.log(""Loading default theme"");
-
-	                theme = getThemeCurrentThemeName();
-	            }}
-				Debug.log(""Changing theme"");
-	            changeTheme(theme, getThemeIsHighContrast());
-
-	            // Update Monaco Size when we receive a window resize event
-				Debug.log(""Listen for resize events on the window and resize the editor"");
-	            window.addEventListener(""resize"", () => {{
-	                            editor.layout();
-	                        }});
-
-	            // Disable WebView Scrollbar so Monaco Scrollbar can do heavy lifting
-	            document.body.style.overflow = 'hidden';
-
-	            // Callback to Parent that we're loaded
-	            Debug.log(""Loaded Monaco"");
-	            Parent.callAction(""Loaded"");
-
-	            Debug.log(""Ending Monaco Load"");
-			}});
-        }})();";
+			string javascript = $@"createMonacoEditor({Handle}, '{UNO_BOOTSTRAP_WEBAPP_BASE_PATH}{UNO_BOOTSTRAP_APP_BASE}', element)";
 
             this.ExecuteJavascript(javascript);
-
-            //Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => NavigationCompleted?.Invoke(this, new WebViewNavigationCompletedEventArgs()));
         }
 	}
 }

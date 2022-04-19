@@ -158,16 +158,13 @@ namespace Monaco
             return InvokeScriptAsync<string>("addCommand", new object[] { keybinding, name, context }).AsAsyncOperation();
         }
 
-        public IAsyncOperation<ContextKey> CreateContextKeyAsync(string key, bool defaultValue)
+        public async Task<ContextKey> CreateContextKeyAsync(string key, bool defaultValue)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken token)
-            {
-                var ck = new ContextKey(this, key, defaultValue);
+            var ck = new ContextKey(this, key, defaultValue);
 
-                await InvokeScriptAsync("createContext", ck);
+            await InvokeScriptAsync("createContext", ck);
 
-                return ck;
-            });            
+            return ck;
         }
 
         public IModel GetModel()

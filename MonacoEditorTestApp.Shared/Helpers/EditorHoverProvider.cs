@@ -4,29 +4,27 @@ using Monaco.Languages;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace MonacoEditorTestApp.Helpers
 {
     class EditorHoverProvider : HoverProvider
     {
-        public IAsyncOperation<Hover> ProvideHover(IModel model, Position position)
+        public async Task<Hover> ProvideHover(IModel model, Position position)
         {
-            return AsyncInfo.Run(async delegate (CancellationToken cancelationToken)
+            var word = await model.GetWordAtPositionAsync(position);
+            if (word != null && word.Word != null && word.Word.IndexOf("Hit", 0, StringComparison.CurrentCultureIgnoreCase) != -1)
             {
-                var word = await model.GetWordAtPositionAsync(position);
-                if (word != null && word.Word != null && word.Word.IndexOf("Hit", 0, StringComparison.CurrentCultureIgnoreCase) != -1)
+                return new Hover(new string[]
                 {
-                    return new Hover(new string[]
-                    {
                         "*Hit* - press the keys following together.",
                         "Some **more** text is here.",
                         "And a [link](https://www.github.com/)."
-                    }, new Monaco.Range(position.LineNumber, position.Column, position.LineNumber, position.Column + 5));
-                }
+                }, new Monaco.Range(position.LineNumber, position.Column, position.LineNumber, position.Column + 5));
+            }
 
-                return default(Hover);
-            });
+            return default(Hover);
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿///<reference path="../monaco-editor/monaco.d.ts" />
-declare var Accessor: ParentAccessor;
 
-const registerCodeLensProvider = function (languageId) {
+const registerCodeLensProvider = function (element: any, languageId) {
+    var editorContext = EditorContext.getEditorForElement(element);
+
     return monaco.languages.registerCodeLensProvider(languageId, {
         provideCodeLenses: function (model, token) {
-            return Accessor.callEvent("ProvideCodeLenses" + languageId, []).then(result => {
+            return editorContext.Accessor.callEvent("ProvideCodeLenses" + languageId, []).then(result => {
                 if (result) {
                     const list: monaco.languages.CodeLensList = JSON.parse(result);
 
@@ -18,7 +19,7 @@ const registerCodeLensProvider = function (languageId) {
             });
         },
         resolveCodeLens: function (model, codeLens, token) {
-            return Accessor.callEvent("ResolveCodeLens" + languageId, [JSON.stringify(codeLens)]).then(result => {
+            return editorContext.Accessor.callEvent("ResolveCodeLens" + languageId, [JSON.stringify(codeLens)]).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }

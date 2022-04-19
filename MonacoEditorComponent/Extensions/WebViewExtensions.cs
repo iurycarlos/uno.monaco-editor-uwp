@@ -175,7 +175,7 @@ namespace Monaco.Extensions
                     sanitizedargs = args.Select(item => item.ToString()).ToArray();
                 }
 
-                var script = method + "(" + string.Join(",", sanitizedargs) + ");";
+                var script = method + "(element," + string.Join(",", sanitizedargs) + ");";
 
                 System.Diagnostics.Debug.WriteLine($"Script {script})");
 

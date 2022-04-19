@@ -104,7 +104,7 @@ namespace Monaco
                 _keyboardListener = new KeyboardListener(this, DispatcherQueue.GetForCurrentThread());
 
                 _view.AddWebAllowedObject("Debug", new DebugLogger());
-                _view.AddWebAllowedObject("Parent", _parentAccessor);
+                _view.AddWebAllowedObject("Accessor", _parentAccessor);
                 _view.AddWebAllowedObject("Theme", _themeListener);
                 _view.AddWebAllowedObject("Keyboard", _keyboardListener);
                 Debug.WriteLine($"InitialiseWebObjects - Completed");
