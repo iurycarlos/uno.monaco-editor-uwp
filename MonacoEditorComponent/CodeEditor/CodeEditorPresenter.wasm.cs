@@ -83,6 +83,11 @@ namespace Monaco
 				this.Log().Debug($"Raising DOMContentLoaded");
 			}
 
+            Loaded += CodeEditorPresenter_Loaded;
+		}
+
+        private void CodeEditorPresenter_Loaded(object sender, RoutedEventArgs e)
+        {
 			Dispatcher.RunAsync(CoreDispatcherPriority.Low, () => DOMContentLoaded?.Invoke(null, new WebViewDOMContentLoadedEventArgs()));
 		}
 
