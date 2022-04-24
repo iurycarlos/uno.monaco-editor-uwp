@@ -227,6 +227,12 @@ namespace Monaco.Helpers
                 {
                     var propinfo = typeinfo.GetProperty(name); // TODO: Cache these?
                     tobj.IsSettingValue = true;
+
+                    if(newValue is string valueAsString)
+                    {
+                        newValue = Desanitize(valueAsString);
+                    }
+
                     propinfo?.SetValue(tobj, newValue);
                     tobj.IsSettingValue = false;
                 }

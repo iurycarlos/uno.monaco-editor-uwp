@@ -219,7 +219,7 @@ namespace Monaco
 		/// <inheritdoc />
 		public IAsyncOperation<string> InvokeScriptAsync(string scriptName, IEnumerable<string> arguments)
 		{
-			var script = $@"(function() {{
+			var script = $@"(async function() {{
 				try {{
 					window.__evalMethod = function() {{ {arguments.Single()} }};
 					
@@ -233,21 +233,26 @@ namespace Monaco
 				}}
 			}})()";
 
-			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
+			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
 			{
 				this.Log().Debug("Invoke Script: " + script);
 			}
 
 			try
 			{
-				var result = this.ExecuteJavascript(script);
-
-				if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
+				async Task<string> Run()
 				{
-					this.Log().Debug($"Invoke Script result: {result}");
+					var result = await this.ExecuteJavascriptAsync(script);
+
+                    if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+                    {
+                        this.Log().Debug($"Invoke Script result: {result}");
+                    }
+
+                    return result;
 				}
 
-				return Task.FromResult(result).AsAsyncOperation();
+				return Run().AsAsyncOperation();
 			}
 			catch (Exception e)
 			{

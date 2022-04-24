@@ -2,6 +2,7 @@
 using Monaco.Helpers;
 using Nito.AsyncEx;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -28,10 +29,13 @@ namespace Monaco
 
         public static DependencyProperty TextProperty { get; } = DependencyProperty.Register(nameof(Text), typeof(string), typeof(CodeEditor), new PropertyMetadata(string.Empty, async (d, e) =>
         {
-            if (d is CodeEditor editor)
+            if (d is CodeEditor { IsSettingValue: false } codeEditor)
             {
+                var t = new StackTrace();
+                Console.WriteLine(t.ToString());
+
                 // link:otherScriptsToBeOrganized.ts:updateContent
-                (d as CodeEditor)?.InvokeScriptAsync("updateContent", e.NewValue.ToString());
+                codeEditor.InvokeScriptAsync("updateContent", e.NewValue.ToString());
             }
         }));
 
@@ -46,10 +50,10 @@ namespace Monaco
 
         public static DependencyProperty SelectedTextProperty { get; } = DependencyProperty.Register(nameof(SelectedText), typeof(string), typeof(CodeEditor), new PropertyMetadata(string.Empty, (d, e) =>
         {
-            if (!(d as CodeEditor).IsSettingValue)
+            if (d is CodeEditor { IsSettingValue: false } codeEditor)
             {
                 // link:updateSelectedContent.ts:updateSelectedContent
-                (d as CodeEditor)?.InvokeScriptAsync("updateSelectedContent", e.NewValue.ToString());
+                codeEditor.InvokeScriptAsync("updateSelectedContent", e.NewValue.ToString());
             }
         }));
 

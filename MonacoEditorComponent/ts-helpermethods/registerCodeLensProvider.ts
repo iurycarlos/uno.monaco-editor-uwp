@@ -5,7 +5,7 @@ const registerCodeLensProvider = function (element: any, languageId) {
 
     return monaco.languages.registerCodeLensProvider(languageId, {
         provideCodeLenses: function (model, token) {
-            return editorContext.Accessor.callEvent("ProvideCodeLenses" + languageId, []).then(result => {
+            return callParentEventAsync(element, "ProvideCodeLenses" + languageId, []).then(result => {
                 if (result) {
                     const list: monaco.languages.CodeLensList = JSON.parse(result);
 
@@ -19,7 +19,7 @@ const registerCodeLensProvider = function (element: any, languageId) {
             });
         },
         resolveCodeLens: function (model, codeLens, token) {
-            return editorContext.Accessor.callEvent("ResolveCodeLens" + languageId, [JSON.stringify(codeLens)]).then(result => {
+            return callParentEventAsync(element, "ResolveCodeLens" + languageId, [JSON.stringify(codeLens)]).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }

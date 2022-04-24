@@ -9,7 +9,7 @@ const registerCodeActionProvider = function (element: any, languageId) {
 
     return monaco.languages.registerCodeActionProvider(languageId, {
         provideCodeActions: function (model, range, context, token) {
-            return editorContext.Accessor.callEvent("ProvideCodeActions" + languageId, [JSON.stringify(range), JSON.stringify(context)]).then(result => {
+            return callParentEventAsync(element, "ProvideCodeActions" + languageId, [JSON.stringify(range), JSON.stringify(context)]).then(result => {
                 if (result) {
                     const list: monaco.languages.CodeActionList = JSON.parse(result);
 

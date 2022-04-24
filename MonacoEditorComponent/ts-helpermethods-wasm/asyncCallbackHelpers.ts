@@ -218,11 +218,11 @@ const callParentEventAsync = (element: any, name: string, parameters: string[]):
             parameters != null && parameters.length > 0 ? stringifyForMarshalling(parameters[0]) : null,
             parameters != null && parameters.length > 1 ? stringifyForMarshalling(parameters[1]) : null);
         if (result) {
-            //console.log('Parent event result: ' + name + ' -  ' +  result);
+            console.log('Parent event result: ' + name + ' -  ' +  result);
             result = desantize(result);
-            //console.log('Desanitized: ' + name + ' -  ' + result);
+            console.log('Desanitized: ' + name + ' -  ' + result);
         } else {
-            //console.log('No Parent event result for ' + name);
+            console.log('No Parent event result for ' + name);
         }
 
         return result;

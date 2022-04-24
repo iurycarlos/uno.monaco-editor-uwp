@@ -169,7 +169,7 @@ namespace Monaco
 
         public IModel GetModel()
         {
-            return _model;
+            return _model ?? throw new NotSupportedException($"Model is not available");
         }
 
         public IAsyncOperation<IEnumerable<Marker>> GetModelMarkersAsync() // TODO: Filter (string? owner, Uri? resource, int? take)
@@ -179,17 +179,17 @@ namespace Monaco
 
         public IAsyncAction SetModelMarkersAsync(string owner, [ReadOnlyArray] IMarkerData[] markers)
         {
-            return SendScriptAsync("monaco.editor.setModelMarkers(model, " + JsonConvert.ToString(owner) + ", " + JsonConvert.SerializeObject(markers) + ");").AsAsyncAction();
+            return SendScriptAsync("monaco.editor.setModelMarkers(EditorContext.getEditorForElement(element).model, " + JsonConvert.ToString(owner) + ", " + JsonConvert.SerializeObject(markers) + ");").AsAsyncAction();
         }
 
         public IAsyncOperation<Position> GetPositionAsync()
         {
-            return SendScriptAsync<Position>("editor.getPosition();").AsAsyncOperation();
+            return SendScriptAsync<Position>("EditorContext.getEditorForElement(element).editor.getPosition();").AsAsyncOperation();
         }
 
         public IAsyncAction SetPositionAsync(IPosition position)
         {
-            return SendScriptAsync("editor.setPosition(" + JsonConvert.SerializeObject(position) + ");").AsAsyncAction();
+            return SendScriptAsync("EditorContext.getEditorForElement(element).editor.setPosition(" + JsonConvert.SerializeObject(position) + ");").AsAsyncAction();
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ const registerHoverProvider = function (element: any, languageId: string) {
 
     return monaco.languages.registerHoverProvider(languageId, {
         provideHover: function (model, position) {
-            return editorContext.Accessor.callEvent("HoverProvider" + languageId, [JSON.stringify(position)]).then(result => {
+            return callParentEventAsync(element, "HoverProvider" + languageId, [JSON.stringify(position)]).then(result => {
                 if (result) {
                     return JSON.parse(result);
                 }

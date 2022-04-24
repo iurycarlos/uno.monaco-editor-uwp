@@ -36,7 +36,7 @@ namespace MonacoEditorTestApp.Helpers
             foreach (var match in matches)
             {
                 // Generate color info for each of these matches by using the XAML converter to read it to a Color value.
-                info.Add(new ColorInformation(XamlBindingHelper.ConvertValue(typeof(Color), match.Matches.First()) as Color? ?? Colors.Black, match.Range));
+                info.Add(new ColorInformation(XamlBindingHelper.ConvertValue(typeof(Color), match.Matches?.FirstOrDefault()) as Color? ?? Colors.Black, match.Range));
             }
 
             return info.AsEnumerable();

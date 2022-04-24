@@ -167,7 +167,7 @@ namespace Monaco.Helpers
                 var sanitized = Santize(resultString);
               //  Console.WriteLine("Santized for callback- " + sanitized);
 
-                var callbackMethod = $"asyncCallback('{promiseId}','{sanitized}');";
+                var callbackMethod = $"asyncCallback('{promiseId}', desantize('{sanitized}'));";
 
                 var result = WebAssemblyRuntime.InvokeJS(callbackMethod);
 
