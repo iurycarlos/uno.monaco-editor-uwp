@@ -9,7 +9,7 @@ jobs:
 
   - task: MSBuild@1
     inputs:
-      solution: MonacoEditorComponent.sln
+      solution: MonacoEditorComponent.slnf
       msbuildArguments: /r /p:Configuration=Release "/p:PackageOutputPath=$(build.artifactstagingdirectory)\nuget" "/p:PackageVersion=$(GITVERSION.FullSemVer)" "/p:InformationalVersion=$(GITVERSION.InformationalVersion)"  /detailedsummary
 
   - task: PowerShell@2
