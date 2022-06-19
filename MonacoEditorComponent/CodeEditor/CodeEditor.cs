@@ -86,6 +86,8 @@ namespace Monaco
             _cssBroker = new CssStyleBroker(this);
 
             base.Loaded += CodeEditor_Loaded;
+            base.SizeChanged += CodeEditor_SizeChanged;
+
             Unloaded += CodeEditor_Unloaded;
 
             // <WebView
@@ -124,6 +126,13 @@ namespace Monaco
             }
             await InvokeScriptAsync("updateOptions", options);
         }
+
+        private void CodeEditor_SizeChanged(object sender, RoutedEventArgs e)
+        {
+            SizeChangedPartial();
+        }
+
+        partial void SizeChangedPartial();
 
         private void CodeEditor_Loaded(object sender, RoutedEventArgs e)
         {

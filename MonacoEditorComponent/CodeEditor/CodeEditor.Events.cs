@@ -52,6 +52,13 @@ namespace Monaco
 #endif
         }
 
+        partial void SizeChangedPartial()
+        {
+#if __WASM__
+            _ = SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
+#endif
+        }
+
         private void WebView_DOMContentLoaded(ICodeEditorPresenter sender, WebViewDOMContentLoadedEventArgs args)
         {
             #if DEBUG
@@ -68,7 +75,7 @@ namespace Monaco
             IsEditorLoaded = true;
 
             // Make sure inner editor is focused
-            await SendScriptAsync("editor.focus();");
+            await SendScriptAsync("EditorContext.getEditorForElement(element).focus();");
 
             // If we're supposed to have focus, make sure we try and refocus on our now loaded webview.
             if (FocusManager.GetFocusedElement() == this)

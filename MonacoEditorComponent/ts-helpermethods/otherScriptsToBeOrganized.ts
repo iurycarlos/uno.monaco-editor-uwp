@@ -1,7 +1,7 @@
 ﻿    ///<reference path="../monaco-editor/monaco.d.ts" />
 
 class EditorContext {
-    static _editors: Map<any, EditorContext> = new Map<any, EditorContext>(); //  { [id: any]: EditorContext } = { };
+    static _editors: Map<any, EditorContext> = new Map<any, EditorContext>();
 
     public static registerEditorForElement(element: any, editor: monaco.editor.IStandaloneCodeEditor): EditorContext {
         var value = EditorContext.getEditorForElement(element);
@@ -10,10 +10,11 @@ class EditorContext {
     }
 
     public static getEditorForElement(element: any): EditorContext {
-        var context = EditorContext._editors[element];
+        var context = EditorContext._editors.get(element);
 
         if (!context) {
-            EditorContext._editors[element] = context = new EditorContext();
+            context = new EditorContext();
+            EditorContext._editors.set(element, context);
         }
 
         return context;
