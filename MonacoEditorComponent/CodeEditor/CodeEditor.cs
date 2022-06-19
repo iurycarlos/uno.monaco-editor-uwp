@@ -127,6 +127,10 @@ namespace Monaco
 
         private void CodeEditor_Loaded(object sender, RoutedEventArgs e)
         {
+#if __WASM__
+            LoadedPartial();
+#endif
+
             // Sync initial pass-thru properties
             if (ReadLocalValue(HasGlyphMarginProperty) == DependencyProperty.UnsetValue && Options.GlyphMargin.HasValue)
             {
@@ -170,6 +174,8 @@ namespace Monaco
                 Loaded?.Invoke(this, new RoutedEventArgs());
             }
         }
+
+        partial void LoadedPartial();
 
         private void CodeEditor_Unloaded(object sender, RoutedEventArgs e)
         {
@@ -233,10 +239,6 @@ namespace Monaco
             }
 
             base.OnApplyTemplate();
-
-#if __WASM__
-            CodeEditor_Loaded(this, null);
-#endif
         }
 
         internal async Task SendScriptAsync(string script,

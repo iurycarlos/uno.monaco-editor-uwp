@@ -31,9 +31,6 @@ namespace Monaco
         {
             if (d is CodeEditor { IsSettingValue: false } codeEditor)
             {
-                var t = new StackTrace();
-                Console.WriteLine(t.ToString());
-
                 // link:otherScriptsToBeOrganized.ts:updateContent
                 codeEditor.InvokeScriptAsync("updateContent", e.NewValue.ToString());
             }

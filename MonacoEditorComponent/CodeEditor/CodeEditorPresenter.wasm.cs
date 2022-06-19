@@ -32,38 +32,6 @@ namespace Monaco
 			_handle = JSObjectHandle.Create(this);
 
 			RaiseDOMContentLoaded();
-
-
-			//WebAssemblyRuntime.InvokeJSWithInterop($@"
-			//	console.log(""///////////////////////////////// subscribing to DOMContentLoaded - "" + {HtmlId});
-
-			//	var frame = Uno.UI.WindowManager.current.getView({HtmlId});
-				
-			//	console.log(""Got view"");
-
-			//	frame.addEventListener(""loadstart"", function(event) {{
-			//		var frameDoc = frame.contentDocument;
-			//		console.log(""/////////////////////////////////  Frame DOMContentLoaded, subscribing to document"" + frameDoc);
-			//		{this}.RaiseDOMContentLoaded();
-			//	}}); 
-			//	console.log(""Added load start"");
-
-
-
-			//	frame.addEventListener(""load"", function(event) {{
-			//		var frameDoc = frame.contentDocument;
-			//		console.log(""/////////////////////////////////  Frame loaded, subscribing to document"" + frameDoc);
-			//		{this}.RaiseDOMContentLoaded();
-			//		//frameDoc.addEventListener(""DOMContentLoaded"", function(event) {{
-			//		//	console.log(""Raising RaiseDOMContentLoaded"");
-			//		//	{this}.RaiseDOMContentLoaded();
-			//		//}});
-			//	}}); 
-
-			//	console.log(""Added load"");
-
-
-			//	");
 		}
 
 		public void RaiseDOMContentLoaded()
@@ -272,8 +240,7 @@ namespace Monaco
 
 		public void Launch()
 		{
-			string javascript = $@"createMonacoEditor({Handle}, '{UNO_BOOTSTRAP_WEBAPP_BASE_PATH}{UNO_BOOTSTRAP_APP_BASE}', element)";
-
+            string javascript = $@"createMonacoEditor({Handle}, '{UNO_BOOTSTRAP_WEBAPP_BASE_PATH}{UNO_BOOTSTRAP_APP_BASE}', element)";
             this.ExecuteJavascript(javascript);
         }
 	}

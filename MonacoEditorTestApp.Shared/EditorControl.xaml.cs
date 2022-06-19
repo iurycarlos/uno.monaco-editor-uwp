@@ -34,7 +34,7 @@ namespace MonacoEditorTestApp
 
         // Using a DependencyProperty as the backing store for Content.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CodeContentProperty =
-            DependencyProperty.Register("CodeContent", typeof(string), typeof(MainPage), new PropertyMetadata(""));
+            DependencyProperty.Register("CodeContent", typeof(string), typeof(EditorControl), new PropertyMetadata(""));
 
         private ContextKey _myCondition;
 
@@ -99,27 +99,8 @@ namespace MonacoEditorTestApp
         {
             if (string.IsNullOrWhiteSpace(CodeContent))
             {
-                //CodeContent = await FileIO.ReadTextAsync(await StorageFile.GetFileFromApplicationUriAsync(new System.Uri("ms-appx:///Content.txt")));
+                CodeContent = await FileIO.ReadTextAsync(await StorageFile.GetFileFromApplicationUriAsync(new System.Uri("ms-appx:///Content.txt")));
 
-                CodeContent = @"public class Program { // http://www.github.com/
-                	public static void Main(string[] args) {
-                		Console.WriteLine(\""Hello, World!\"");
-                	}
-
-                	/*
-                	 * Things to Try:
-                	 * - Hover over the word 'Hit'
-                	 * - Hit F1 and Search for 'TestAction'
-                	 * - Press Ctrl+Enter
-                	 * - After using Ctrl+Enter, hit F5
-                	 * - Hit Ctrl+L
-                	 * - Hit Ctrl+U
-                	 * - Hit Ctrl+W
-                	 * - Type the letter 'c'
-                	 * - Type the word 'boo'
-                	 * - Type 'foreach' to see Snippet.
-                	 */
-                }";
 
                 ButtonHighlightRange_Click(null, null);
             }

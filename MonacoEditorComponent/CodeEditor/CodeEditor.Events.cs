@@ -43,6 +43,14 @@ namespace Monaco
         public new event WebKeyEventHandler KeyDown;
 
         private ThemeListener _themeListener;
+        partial void LoadedPartial()
+        {
+#if __WASM__
+            InitialiseWebObjects();
+
+            _view.Launch();
+#endif
+        }
 
         private void WebView_DOMContentLoaded(ICodeEditorPresenter sender, WebViewDOMContentLoadedEventArgs args)
         {
@@ -50,12 +58,6 @@ namespace Monaco
             Debug.WriteLine("DOM Content Loaded");
             #endif
             _initialized = true;
-
-#if __WASM__
-            InitialiseWebObjects();
-
-            _view.Launch();
-#endif
         }
 
         private async void WebView_NavigationCompleted(ICodeEditorPresenter sender, WebViewNavigationCompletedEventArgs args)
@@ -129,7 +131,9 @@ namespace Monaco
             Loading?.Invoke(this, new RoutedEventArgs());
 
             // Make sure inner editor is focused
-            await SendScriptAsync("editor.focus();");
+            await SendScriptAsync("EditorContext.getEditorForElement(element).focus();");
+
+            await SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
 
             // If we're supposed to have focus, make sure we try and refocus on our now loaded webview.
             if (FocusManager.GetFocusedElement() == this)

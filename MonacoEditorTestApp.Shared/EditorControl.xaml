@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:monaco="using:Monaco"
-      mc:Ignorable="d"
-      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+      mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           x:Name="RootGrid">
@@ -30,6 +29,8 @@
                            KeyDown="Editor_KeyDown"
                            GotFocus="Editor_GotFocus"
                            LostFocus="Editor_LostFocus"
+                           BorderThickness="3"
+                           BorderBrush="Red"
                            Text="{x:Bind CodeContent, Mode=TwoWay}"
                            Options="{x:Bind options, Mode=OneWay}">
         </monaco:CodeEditor>

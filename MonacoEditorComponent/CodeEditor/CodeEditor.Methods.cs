@@ -137,6 +137,11 @@ namespace Monaco
 
         public IAsyncOperation<string> AddCommandAsync(int keybinding, CommandHandler handler, string context)
         {
+            if(_parentAccessor == null)
+            {
+                throw new InvalidOperationException($"_parentAccessor is not available");
+            }
+
             var name = "Command" + Interlocked.Increment(ref _commandIndex);
             _parentAccessor.RegisterActionWithParameters(name, (parameters) => 
             {
