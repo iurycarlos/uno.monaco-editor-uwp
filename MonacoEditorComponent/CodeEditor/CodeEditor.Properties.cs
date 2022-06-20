@@ -29,7 +29,7 @@ namespace Monaco
 
         public static DependencyProperty TextProperty { get; } = DependencyProperty.Register(nameof(Text), typeof(string), typeof(CodeEditor), new PropertyMetadata(string.Empty, async (d, e) =>
         {
-            if (d is CodeEditor { IsSettingValue: false } codeEditor)
+            if (d is CodeEditor { IsSettingValue: false } codeEditor && codeEditor.IsEditorLoaded)
             {
                 // link:otherScriptsToBeOrganized.ts:updateContent
                 codeEditor.InvokeScriptAsync("updateContent", e.NewValue.ToString());
@@ -47,7 +47,7 @@ namespace Monaco
 
         public static DependencyProperty SelectedTextProperty { get; } = DependencyProperty.Register(nameof(SelectedText), typeof(string), typeof(CodeEditor), new PropertyMetadata(string.Empty, (d, e) =>
         {
-            if (d is CodeEditor { IsSettingValue: false } codeEditor)
+            if (d is CodeEditor { IsSettingValue: false } codeEditor && codeEditor.IsEditorLoaded)
             {
                 // link:updateSelectedContent.ts:updateSelectedContent
                 codeEditor.InvokeScriptAsync("updateSelectedContent", e.NewValue.ToString());

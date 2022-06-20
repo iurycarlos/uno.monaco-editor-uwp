@@ -55,7 +55,10 @@ namespace Monaco
         partial void SizeChangedPartial()
         {
 #if __WASM__
-            _ = SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
+            if (IsEditorLoaded)
+            {
+                _ = SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
+            }
 #endif
         }
 
@@ -141,6 +144,9 @@ namespace Monaco
             await SendScriptAsync("EditorContext.getEditorForElement(element).focus();");
 
             await SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
+
+            await InvokeScriptAsync("updateLanguage", Options.Language);
+            await InvokeScriptAsync("updateOptions", Options);
 
             // If we're supposed to have focus, make sure we try and refocus on our now loaded webview.
             if (FocusManager.GetFocusedElement() == this)

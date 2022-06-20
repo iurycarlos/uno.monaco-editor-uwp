@@ -86,8 +86,7 @@ namespace Monaco
             _cssBroker = new CssStyleBroker(this);
 
             base.Loaded += CodeEditor_Loaded;
-            base.SizeChanged += CodeEditor_SizeChanged;
-
+            SizeChanged += CodeEditor_SizeChanged;
             Unloaded += CodeEditor_Unloaded;
 
             // <WebView
@@ -180,8 +179,15 @@ namespace Monaco
                 Unloaded -= CodeEditor_Unloaded;
                 Unloaded += CodeEditor_Unloaded;
 
+                Window.Current.SizeChanged += OnWindowSizeChanged;
+
                 Loaded?.Invoke(this, new RoutedEventArgs());
             }
+        }
+
+        private void OnWindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        {
+            SizeChangedPartial();
         }
 
         partial void LoadedPartial();
