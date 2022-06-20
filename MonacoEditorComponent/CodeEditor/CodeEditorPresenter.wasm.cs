@@ -36,7 +36,6 @@ namespace Monaco
 
 		public void RaiseDOMContentLoaded()
 		{
-            Console.WriteLine("RaiseDOMContentLoaded");
 			this.Log().Info($"RaiseDOMContentLoaded: Handle is null {_handle == null}");
 
 			if (this.Log().IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
