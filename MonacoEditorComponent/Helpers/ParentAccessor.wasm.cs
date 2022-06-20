@@ -82,7 +82,7 @@ namespace Monaco.Helpers
 
          * 
          */
-        
+
         public static string Santize(string jsonString)
         {
             if (jsonString == null) return null;

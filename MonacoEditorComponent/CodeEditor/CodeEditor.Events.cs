@@ -57,7 +57,7 @@ namespace Monaco
 #if __WASM__
             if (IsEditorLoaded)
             {
-                _ = SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
+                _ = SendScriptAsync("EditorContext.getEditorForElement(element).editor.layout();");
             }
 #endif
         }
@@ -78,7 +78,7 @@ namespace Monaco
             IsEditorLoaded = true;
 
             // Make sure inner editor is focused
-            await SendScriptAsync("EditorContext.getEditorForElement(element).focus();");
+            await SendScriptAsync("EditorContext.getEditorForElement(element).editor.focus();");
 
             // If we're supposed to have focus, make sure we try and refocus on our now loaded webview.
             if (FocusManager.GetFocusedElement() == this)
@@ -141,9 +141,9 @@ namespace Monaco
             Loading?.Invoke(this, new RoutedEventArgs());
 
             // Make sure inner editor is focused
-            await SendScriptAsync("EditorContext.getEditorForElement(element).focus();");
+            await SendScriptAsync("EditorContext.getEditorForElement(element).editor.focus();");
 
-            await SendScriptAsync("EditorContext.getEditorForElement(element).layout();");
+            await SendScriptAsync("EditorContext.getEditorForElement(element).editor.layout();");
 
             await InvokeScriptAsync("updateLanguage", Options.Language);
             await InvokeScriptAsync("updateOptions", Options);

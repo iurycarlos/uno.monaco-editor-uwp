@@ -119,7 +119,7 @@ const getOptions = async function (element: any): Promise<monaco.editor.IEditorO
 
     let opt = null;
     try {
-        opt = JSON.parse(await editorContext.Accessor.getJsonValue("Options"));
+        opt = getParentValue(element, "Options");
     } finally {
 
     }
