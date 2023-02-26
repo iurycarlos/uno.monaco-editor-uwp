@@ -228,13 +228,19 @@ namespace Monaco.Helpers
                     var propinfo = typeinfo.GetProperty(name); // TODO: Cache these?
                     tobj.IsSettingValue = true;
 
-                    if(newValue is string valueAsString)
+                    try
                     {
-                        newValue = Desanitize(valueAsString);
-                    }
+                        if (newValue is string valueAsString)
+                        {
+                            newValue = Desanitize(valueAsString);
+                        }
 
-                    propinfo?.SetValue(tobj, newValue);
-                    tobj.IsSettingValue = false;
+                        propinfo?.SetValue(tobj, newValue);
+                    }
+                    finally 
+                    {
+                        tobj.IsSettingValue = false;
+                    }
                 }
             });
         }
@@ -257,8 +263,14 @@ namespace Monaco.Helpers
                     var obj = JsonConvert.DeserializeObject(newValue, typeobj);
 
                     tobj.IsSettingValue = true;
-                    propinfo?.SetValue(tobj, obj);
-                    tobj.IsSettingValue = false;
+                    try
+                    {
+                        propinfo?.SetValue(tobj, obj);
+                    }
+                    finally
+                    {
+                        tobj.IsSettingValue = false;
+                    }
                 }
             });
         }

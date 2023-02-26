@@ -29,11 +29,16 @@ namespace Monaco
 
         public static DependencyProperty TextProperty { get; } = DependencyProperty.Register(nameof(Text), typeof(string), typeof(CodeEditor), new PropertyMetadata(string.Empty, async (d, e) =>
         {
-            if (d is CodeEditor { IsSettingValue: false } codeEditor && codeEditor.IsEditorLoaded)
+            if (d is CodeEditor codeEditor)
             {
-                // link:otherScriptsToBeOrganized.ts:updateContent
-                codeEditor.InvokeScriptAsync("updateContent", e.NewValue.ToString());
-            }
+                if (codeEditor.IsEditorLoaded && !codeEditor.IsSettingValue)
+                {
+                    // link:otherScriptsToBeOrganized.ts:updateContent
+                    await codeEditor.InvokeScriptAsync("updateContent", e.NewValue.ToString());
+				}
+
+				codeEditor.NotifyPropertyChanged(nameof(Text));
+			}
         }));
 
         /// <summary>
@@ -47,12 +52,17 @@ namespace Monaco
 
         public static DependencyProperty SelectedTextProperty { get; } = DependencyProperty.Register(nameof(SelectedText), typeof(string), typeof(CodeEditor), new PropertyMetadata(string.Empty, (d, e) =>
         {
-            if (d is CodeEditor { IsSettingValue: false } codeEditor && codeEditor.IsEditorLoaded)
-            {
-                // link:updateSelectedContent.ts:updateSelectedContent
-                codeEditor.InvokeScriptAsync("updateSelectedContent", e.NewValue.ToString());
-            }
-        }));
+            if (d is CodeEditor codeEditor)
+			{
+                if (codeEditor.IsEditorLoaded && !codeEditor.IsSettingValue)
+                {
+                    // link:updateSelectedContent.ts:updateSelectedContent
+                    codeEditor.InvokeScriptAsync("updateSelectedContent", e.NewValue.ToString());
+                }
+
+				codeEditor.NotifyPropertyChanged(nameof(SelectedText));
+			}
+		}));
 
         public Selection SelectedRange
         {
