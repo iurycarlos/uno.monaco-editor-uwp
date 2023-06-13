@@ -10,20 +10,20 @@
 		<license type="expression">MIT</license>
 		<projectUrl>https://github.com/unoplatform/uno.monaco-editor-uwp</projectUrl>
 		<description>A Windows Runtime Component and WASM wrapper around the web-based Monaco Editor. Designed for use with the Uno Platform</description>
-		<releaseNotes>Minor fixes, better .NET Native support.</releaseNotes>
-		<copyright>Copyright (C) 2015-2021 Uno Platform inc. - all rights reserved</copyright>
-		<tags>uwp wasm monaco editor controls</tags>
+		<releaseNotes></releaseNotes>
+		<copyright>Copyright (C) 2015-2023 Uno Platform inc. - all rights reserved</copyright>
+		<tags>winui wasm monaco editor controls</tags>
 		<dependencies>
-			<group targetFramework=".NETStandard2.0">
+			<group targetFramework="net7.0">
 				<dependency id="Newtonsoft.Json" version="12.0.3"/>
 				<dependency id="Nito.AsyncEx" version="5.0.0"/>
-				<dependency id="Uno.UI" version="5.0.0-feature.5x.634" />
-				<dependency id="Uno.UI.Runtime.WebAssembly" version="5.0.0-feature.5x.634" />
+				<dependency id="Uno.WinUI" version="5.0.0-feature.5x.634" />
+				<dependency id="Uno.WinUI.Runtime.WebAssembly" version="5.0.0-feature.5x.634" />
 			</group>
 		</dependencies>
 		<contentFiles>
 
-			<files include="any/netstandard2.0/monaco-editor/min/**/*.*" buildAction="Content" />
+			<files include="any/net7.0/monaco-editor/min/**/*.*" buildAction="Content" />
 
 		</contentFiles>
 
